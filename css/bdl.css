@@ -1,0 +1,174 @@
+.birthdaylist .TABLE {
+  padding: 0px;
+  margin: 0px;
+}
+
+.birthdaylist .THEAD {
+
+}
+
+.birthdaylist .TR-HEAD {
+
+}
+
+.birthdaylist header {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 20px;
+  font-family: "Roboto Condensed", Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  border-bottom: 1px solid #444444;
+  line-height: 20px;
+  padding-bottom: 5px;
+  color: #ffffff;
+  text-align: left;
+}
+
+.birthdaylist .tfoot {
+
+}
+
+.birthdaylist .tr-foot {
+
+}
+
+.birthdaylist .td-foot {
+  line-height: 16px;
+  font-size: 16px;
+  font-family: "Roboto Condensed", Arial, Helvetica, sans-serif;
+  padding: 0px;
+  margin: 0px;
+}
+
+.birthdaylist .TBODY {
+
+}
+
+.birthdaylist .tr-body {
+
+}
+
+.birthdaylist .TD-IMAGE {
+  width: 27px;
+  font-size: 20px;
+  color: #000000;
+  background-repeat: no-repeat;
+  background-position: top left;
+  background-image: url("/modules/birthdaylist/images/calendar_sheet.png");
+  font-weight: 700;
+  line-height: 26px;
+  vertical-align: top;
+  text-align: center;
+  margin: 0px;
+  padding: 10px 0px 10px 0px;
+}
+
+.birthdaylist .TD-IMAGE_DIMMED {
+  width: 27px;
+  font-size: 20px;
+  color: #999999;
+  background-repeat: no-repeat;
+  background-position: top left;
+  background-image: url("/modules/birthdaylist/images/calendar_sheet_dimmed.png");
+  font-weight: 700;
+  line-height: 26px;
+  vertical-align: top;
+  text-align: center;
+  margin: 0px;
+  padding: 10px 0px 10px 0px;
+}
+
+.birthdaylist .TD-BODY {
+  font-size: 18px;
+  text-transform: uppercase;
+  color: #888888;
+  letter-spacing: 0.1em;
+  vertical-align: top;
+  text-align: left;
+  line-height: 20px;
+  padding: 0px 0px 8px 12px;
+/*
+  border: 1px solid orange;
+*/
+}
+
+.birthdaylist .TD-BODY_DIMMED {
+  font-size: 18px;
+  text-transform: uppercase;
+  color: #444444;
+  letter-spacing: 0.1em;
+  vertical-align: top;
+  text-align: left;
+  line-height: 20px;
+  padding: 0px 0px 8px 12px;
+}
+
+.birthdaylist .TD-SAME {
+  font-size: 18px;
+  text-transform: uppercase;
+  color: #888888;
+  letter-spacing: 0.1em;
+  vertical-align: top;
+  line-height: 20px;
+  padding: 0px 0px 8px 0px;
+  text-align:left;
+/*
+  border: 1px solid orange;
+*/
+}
+
+.birthdaylist .TD-SAME_DIMMED {
+  font-size: 18px;
+  text-transform: uppercase;
+  color: #444444;
+  letter-spacing: 0.1em;
+  vertical-align: top;
+  line-height: 20px;
+  padding: 0px 0px 8px 0px;
+  text-align:left;
+/*
+  border: 1px solid orange;
+*/
+}
+
+.birthdaylist .TD-AGE {
+  font-size: 18px;
+  color: white;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  vertical-align: top;
+  text-align: right;
+  line-height: 20px;
+  padding: 0px 0px 8px 10px;
+  margin: 0px;
+  text-align:left;
+/*
+  border: 1px solid red;
+*/
+}
+
+.birthdaylist .TD-AGE_DIMMED {
+  font-size: 18px;
+  color: #444444;
+  letter-spacing: 0.1em;
+  vertical-align: top;
+  text-align: left;
+  line-height: 20px;
+  padding: 0px 0px 8px 10px;
+  margin: 0px;
+/*
+  border: 1px solid red;
+*/
+}
+
+.birthdaylist .WWWW {
+  border: 1px solid red;
+}
+
+.birthdaylist .SPACER {
+  line-height: 5px;
+  height: 5px;
+/*
+  border: 1px solid green;
+*/
+}
