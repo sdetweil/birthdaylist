@@ -15,14 +15,14 @@ module.exports = NodeHelper.create({
 	init() {console.log("init module helper birthdaylist"); },
 
 	start() { },
-	
+
 	stop() {console.log("Stopping module helper: ",this.name); },
 
 	// handle messages from our module
 	// each notification indicates a different messages
-	// payload is a data structure that is different per message 
+	// payload is a data structure that is different per message
 	// ... up to you to design this
-	socketNotificationReceived(notification, payload) {				
+	socketNotificationReceived(notification, payload) {
 		var self = this;
 		console.log("Starting module helper: ",this.name);
 
@@ -30,12 +30,12 @@ module.exports = NodeHelper.create({
 		const csvFilePath = this.path + '/data/bdl.csv';
 		csv()
 		.fromFile(csvFilePath)
-		.then(function(jsonObj) {      
-			JSON.stringify(jsonObj);
+		.then(function(jsonObj) {
+			//console.log("list="+JSON.stringify(jsonObj));
 
 			// send data to [modulname].js
 			self.sendSocketNotification("JSONDATA", jsonObj);
-		})		
+		})
 
 		// if config message from module
 		if (notification === "CONFIG") {

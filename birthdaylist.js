@@ -11,17 +11,17 @@ Module.register("birthdaylist", {
 
 	defaults: {
 		language: "de",
-		dimmEntries: false,  // true: dims entries and the associated 
+		dimmEntries: false,  // true: dims entries and the associated
 							 //       symbol when the date has expired.
-							 // false: delete entries and the associated 
-							 //        symbol when the date has expired.						
-	    debug:false,						
+							 // false: delete entries and the associated
+							 //        symbol when the date has expired.
+	    debug:false,
 		initialLoadDelay: 0, // How many seconds to wait on a fresh start up.
 							 // This is to prevent collision with all other modules also
 							 // loading all at the same time. This only happens once,
 							 // when the mirror first starts up.
 		updateDelay: 5       // How many seconds after midnight before a refresh
-						     // This is to prevent collision with other 
+						     // This is to prevent collision with other
 							 // modules refreshing at the same time.
 	},
 	suspended: false,
@@ -64,7 +64,7 @@ Module.register("birthdaylist", {
 	// return list of other functional scripts to use, if any (like require in node_helper)
 	getScripts: function() {
 		return	["moment.js"];
-	}, 
+	},
 
 	// return list of stylesheet files to use if any
 	getStyles: function() {
@@ -105,7 +105,7 @@ Module.register("birthdaylist", {
 		}
 	},
 
-	// figure out the date format from the actual strings.. 
+	// figure out the date format from the actual strings..
 	getDateLayout: function (payload) {
 		var self = this
 		// work with the 1st element as a model
@@ -114,31 +114,32 @@ Module.register("birthdaylist", {
 		const regex = /[/\-.]/;
 		// get it
 		this.separator = info.birth.match(regex);
-		// spolit the birtday specified with the separator
+		// split the birtday specified with the separator
 		var date_as_array = info.birth.split(self.separator)
 		// say we haven't figure out which field is the month yet
 		var search_month = -1
 		// if last field is long, we know we have the year field
-		if(date_as_array[2].length == 4) {
+		// or if there are just 2 fields, then we know year was left out
+		if(date_as_array[2].length == 4 || date_as_array.length == 2 ) {
 			self.yeari = 2;
 			// start looking for the month at the start of the array
 			search_month = 0
-			// to extract just the mm/dd start here 
+			// to extract just the mm/dd start here
 			this.date_start = 0
-			// to extract just the mm/dd end here 
+			// to extract just the mm/dd end here
 			this.date_end = 5
 		}
 		else {
 			// else year must be first
-			self.yeari = 0				
+			self.yeari = 0
 			// start looking for the month at the second item of array
 			search_month = 1
-			// to extract just the mm/dd start here 
+			// to extract just the mm/dd start here
 			this.date_start = 5
-			// to extract just the mm/dd end here 
+			// to extract just the mm/dd end here
 			this.date_end = 10
 		}
-		
+
 		// now we need to loop thru all the birthdays and find something > 12 (year is 12 months)
 		// if greater, that must be the day field
 		for(bd of payload) {
@@ -146,8 +147,8 @@ Module.register("birthdaylist", {
 			var a = bd.birth.split(self.separator)
 			// loop thru the 2 array items, only 2 times
 			for(var i = search_month,count = 2; i < a.length && count; i++, count--) {
-				// if this value is >12, 
-				if(a[i] > 12) {						
+				// if this value is >12,
+				if(a[i] > 12) {
 					// we have found he days field in the date string
 					this.dayi = i
 					// stop looking
@@ -160,34 +161,34 @@ Module.register("birthdaylist", {
 				break;
 		}
 		// looked thru all the specified birthdays and can't find a clear answer, so have to guess
-		// if the day field is not found yet		
+		// if the day field is not found yet
 		if(this.dayi == -1) {
-			// if the separator is /, it slikely a US date
-			if(this.separator == '/'){				 
+			// if the separator is /, its likely a US date
+			if(this.separator == '/'){
 				// MM/DD/YYYY
 				if(this.yeari == 2) {
 					// set the month 1st
 					this.monthi = 0
-					//and day second 
+					//and day second
 					this.dayi = 1
 				}
 				else // YYYY/MM/DD??
 				{
 					// set the month 1st
 					this.monthi = 1
-					//and day second 
+					//and day second
 					this.dayi = 2
 				}
-			} 
+			}
 			else {
-				// not /, 
+				// not /,
 				// so more likey DD.MM
-				if(this.yeari == 2) {				
-					this.dayi = 0					
+				if(this.yeari == 2) {
+					this.dayi = 0
 					this.monthi = 1
 				}
-				else { // never seen this but 
-					this.dayi = 1					
+				else { // never seen this but
+					this.dayi = 1
 					this.monthi = 2
 				}
 			}
@@ -207,14 +208,14 @@ Module.register("birthdaylist", {
 		if(l!= undefined)
 			// thats where month is
 			this.monthi = l
-		// set the masrk fields for birthdate momemnt from input data
+		// set the mask fields for birthdate moment from input data
 		// we know know, so just get it done, clear code later
 		this.date_mask[this.yeari] = "YYYY"
 		this.date_mask[this.dayi] = "DD"
-		this.date_mask[this.monthi] = "MM"		
+		this.date_mask[this.monthi] = "MM"
 		var di = this.date_mask.findIndex((value, index, arr)=> {
 			return value == 'DD'
-		})		
+		})
 		if(di == 0)
 			this.day_month_mask = "DD" + this.separator + "MM"
 		else
@@ -230,9 +231,9 @@ Module.register("birthdaylist", {
 			var self = this
 
 			Log.log(this.name + " received a socket notification: " + notification + " - Payload: " + payload);
-			
+
 			var now = moment();
-			
+
 			// clear the list
 			this.active_birthdays = {}
 
@@ -254,40 +255,42 @@ Module.register("birthdaylist", {
 
 					// birthday is in this month
 					// check the hash if we've seen anything for today yet
-					// if we haven't see this date yet
+					// if we haven't seen this date yet
 					// the field in the hash will not be set yet
 					if(self.active_birthdays[birth_date] == undefined) {
-						// create the holder for its info (array of 
+						// create the holder for its info (array of
 						//   info) in the hash
 						self.active_birthdays[birth_date] = []
 					}
 
 					var person_age = now.diff(birth_date_moment, 'years')
-
+					if(person_age == 0)
+						person_age = ' '
+					else
 					if(birth_date_moment.format('DD') > now.format('DD'))
 						person_age++;
-						
+
 					// save the persons name and age on the list
 					// second time around on, we will just append to the end for this date
-					self.active_birthdays[birth_date].push({'name':birthday.name, 'age': person_age })	
+					self.active_birthdays[birth_date].push({'name':birthday.name, 'age': person_age })
 				}
 			}
-			
+
 			// lets sort the birthdays in order 1->31
-	        const ordered = {};
+	    const ordered = {};
 			Object.keys(self.active_birthdays).sort().forEach(function(key) {
 				ordered[key] = self.active_birthdays[key];
 			});
-			
+
 			// make a copy of the ordered list
-		    this.active_birthdays=JSON.parse(JSON.stringify(ordered))			
-     
+		    this.active_birthdays=JSON.parse(JSON.stringify(ordered))
+
 			// tell MM to call and get our content
 			if(this.config.debug)
-				Log.log(JSON.stringify(this.active_birthdays))			
+				Log.log(JSON.stringify(this.active_birthdays))
 			self.updateDom();
-		}     									
-		
+		}
+
 	},
 
 	// system notification your module is being hidden
@@ -301,17 +304,17 @@ Module.register("birthdaylist", {
 	resume: function() {
 		this.suspended=false
 	},
-	
+
 	// create document element worker
 	createEl : function (type, id, className, parent, value) {
 		var el= document.createElement(type)
 		if(id)
 			el.id = id
 		if(className)
-			el.className = className		
+			el.className = className
 		if(parent)
 			parent.appendChild(el)
-		if(value) { 
+		if(value) {
 			var e = document.createTextNode(value)
 			el.appendChild(e)
 		}
@@ -354,7 +357,7 @@ Module.register("birthdaylist", {
 		return bd
 	},
 
-    // this is the major worker of the module, it provides the 
+    // this is the major worker of the module, it provides the
     // 	 displayable content for this module
 	getDom: function() {
 		var wrapper = this.createEl("div",null,null,null,null);
@@ -367,35 +370,35 @@ Module.register("birthdaylist", {
 
 				// create table header here, array of column names
 
-				var table_header = this.createTableHeader(table, null, [" "," "])		
+				var table_header = this.createTableHeader(table, null, [" "," "])
 
 				// create looped row section
-				var tBody = this.createEl('tbody', "birthday-tbody", "TBODY", table, null);		
+				var tBody = this.createEl('tbody', "birthday-tbody", "TBODY", table, null);
 
 				var first_time_for_birthday = {}
 
-				for(var birthday of Object.keys(this.active_birthdays)) {				
+				for(var birthday of Object.keys(this.active_birthdays)) {
 
 					first_time_for_birthday[birthday]=true
 
-					for(var person of this.active_birthdays[birthday]) {			    				
+					for(var person of this.active_birthdays[birthday]) {
 
 						// create looped row section
-						var bodyTR = this.createEl('tr', null, "TR-BODY",tBody, null);	
+						var bodyTR = this.createEl('tr', null, "TR-BODY",tBody, null);
 
-						let now = moment()		
+						let now = moment()
 						let entrie = moment(birthday,this.day_month_mask)
-						
+
 						if(this.config.dimmEntries ||  entrie.isSameOrAfter(now, 'day')){   // don't display for dimmed=false
 
-							if(first_time_for_birthday[birthday] == true) {			    	
-								var imageTD = this.createEl('td', null, "TD-IMAGE".concat(entrie.isBefore(now,'day')?"_DIMMED":'') , bodyTR, this.getBD_DAY_from_Date(birthday));		
-							
+							if(first_time_for_birthday[birthday] == true) {
+								var imageTD = this.createEl('td', null, "TD-IMAGE".concat(entrie.isBefore(now,'day')?"_DIMMED":'') , bodyTR, this.getBD_DAY_from_Date(birthday));
+
 								var nameTD = this.createEl('td', null, "TD-BODY".concat(entrie.isBefore(now,'day')?"_DIMMED":'') , bodyTR, person.name);
 								// needs class for width
 								this.createEl("span", null, null, nameTD, "");
 								var spanTDo = this.createEl("span", null, "TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":''), nameTD, person.age);
-							}	
+							}
 							else {
 								// add a break
 								this.createEl('br', null , null , spanTDo, null);
@@ -404,11 +407,11 @@ Module.register("birthdaylist", {
 								var nameTD = this.createEl('span', null, "TD-SAME".concat(entrie.isBefore(now,'day')?"_DIMMED":'') ,spanTDo, person.name);
 
 								// add a span with age
-								var spanTD = this.createEl("span", null, "TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":''), spanTDo, person.age);						
-							}												
-						}				
+								var spanTD = this.createEl("span", null, "TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":''), spanTDo, person.age);
+							}
+						}
 
-						first_time_for_birthday[birthday] = false;		
+						first_time_for_birthday[birthday] = false;
 					}
 				}
 			}
