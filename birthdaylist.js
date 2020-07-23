@@ -120,7 +120,7 @@ Module.register("birthdaylist", {
 		var search_month = -1
 		// if last field is long, we know we have the year field
 		// or if there are just 2 fields, then we know year was left out
-		if(date_as_array[2].length == 4 || date_as_array.length == 2 ) {
+		if( date_as_array.length == 2  || date_as_array[2].length == 4 ) {
 			self.yeari = 2;
 			// start looking for the month at the start of the array
 			search_month = 0
