@@ -5,13 +5,11 @@ git clone https://github.com/sdetweil/birthdaylist
 cd birthdaylist
 npm install
 
-
-reads from CSV
+reads from CSV in the module folder
 
 2 columns
 
 birthday , name 
-
 07/21/76  , Fred
 
 
