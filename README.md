@@ -5,7 +5,8 @@ git clone https://github.com/sdetweil/birthdaylist
 cd birthdaylist
 npm install
 
-reads from CSV in the module folder
+
+reads from bdl.csv in the module data folder, sample provided
 
 2 columns
 
@@ -22,16 +23,16 @@ sample provided in bdl.css
 
 config  params, and defaults
 
-    language: "de",
+		language: "de",
 		dimmEntries: false,  // true: dims entries and the associated
 							 //       symbol when the date has expired.
 							 // false: dont display entries and the associated
 							 //        symbol when the date has expired.
-	  debug:false,
 		initialLoadDelay: 0, // How many seconds to wait on a fresh start up.
 							 // This is to prevent collision with all other modules also
 							 // loading all at the same time. This only happens once,
 							 // when the mirror first starts up.
-		updateDelay: 5       // How many seconds after midnight before a refresh
+		updateDelay: 5,      // How many seconds after midnight before a refresh
 						     // This is to prevent collision with other
 							 // modules refreshing at the same time.
+		debug:false
