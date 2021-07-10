@@ -11,6 +11,7 @@ reads from CSV
 2 columns
 
 birthday , name 
+
 07/21/76  , Fred
 
 
