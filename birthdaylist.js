@@ -15,14 +15,18 @@ Module.register("birthdaylist", {
 							 //       symbol when the date has expired.
 							 // false: delete entries and the associated
 							 //        symbol when the date has expired.
-	    debug:false,
+	  debug:false,
 		initialLoadDelay: 0, // How many seconds to wait on a fresh start up.
 							 // This is to prevent collision with all other modules also
 							 // loading all at the same time. This only happens once,
 							 // when the mirror first starts up.
-		updateDelay: 5       // How many seconds after midnight before a refresh
+		updateDelay: 5,       // How many seconds after midnight before a refresh
 						     // This is to prevent collision with other
 							 // modules refreshing at the same time.
+		currentMonthOnly: true,
+		maxEntries: 0,
+		dateFormat: '',
+		ageFormat:'',
 	},
 	suspended: false,
 	// place to save birthdays to display
@@ -251,7 +255,10 @@ Module.register("birthdaylist", {
 				var birth_date_moment = moment(birthday.birth,this.date_mask.join(this.separator))
 
 				// if this birthday is for this month
-			   	if(birth_date_moment.month() == now.month()) {
+			  if(
+			  	 (this.config.currentMonthOnly && birth_date_moment.month() == now.month()) ||
+			  	 (!this.config.currentMonthOnly && ((birth_date_moment.month() >= now.month()) || (now.month===11 && birth_date_moment.month()==0)))
+			  	) {
 
 					// birthday is in this month
 					// check the hash if we've seen anything for today yet
@@ -272,18 +279,28 @@ Module.register("birthdaylist", {
 
 					// save the persons name and age on the list
 					// second time around on, we will just append to the end for this date
-					self.active_birthdays[birth_date].push({'name':birthday.name, 'age': person_age })
+					self.active_birthdays[birth_date].push({'name':birthday.name, 'age': person_age, birthday_moment:birth_date_moment})
 				}
 			}
 
 			// lets sort the birthdays in order 1->31
 	    const ordered = {};
-			Object.keys(self.active_birthdays).sort().forEach(function(key) {
+	    // this depends on the fact that keys will return the keys in the order inserted,
+			Object.keys(self.active_birthdays).sort((a,b)=>{
+					// sort by month/day, as it could be across months
+					let am =  moment(a,this.date_mask.slice(0,2).join(this.separator))
+					let bm =  moment(b,this.date_mask.slice(0,2).join(this.separator))
+					return am - bm ;
+				}).forEach(function(key) {
+			console.log("adding entry="+key)
 				ordered[key] = self.active_birthdays[key];
 			});
 
 			// make a copy of the ordered list
-		    this.active_birthdays=JSON.parse(JSON.stringify(ordered))
+			this.active_birthdays= ordered;
+
+			// can't copy with moment in the object., it comes out as a string
+		  //this.active_birthdays=JSON.parse(JSON.stringify(ordered))
 
 			// tell MM to call and get our content
 			if(this.config.debug)
@@ -363,6 +380,8 @@ Module.register("birthdaylist", {
 		var wrapper = this.createEl("div",null,null,null,null);
 		if(this.suspended==false){
 
+			let counter = this.config.maxEntries
+
 			if(Object.keys(this.active_birthdays).length > 0) {
 
 				// create your table here
@@ -379,39 +398,45 @@ Module.register("birthdaylist", {
 
 				for(var birthday of Object.keys(this.active_birthdays)) {
 
-					first_time_for_birthday[birthday]=true
+					if(this.config.maxEntries===0 || counter-->=0){
 
-					for(var person of this.active_birthdays[birthday]) {
+						first_time_for_birthday[birthday]=true
 
-						// create looped row section
-						var bodyTR = this.createEl('tr', null, "TR-BODY",tBody, null);
+						for(var person of this.active_birthdays[birthday]) {
 
-						let now = moment()
-						let entrie = moment(birthday,this.day_month_mask)
+							// create looped row section
+							var bodyTR = this.createEl('tr', null, "TR-BODY",tBody, null);
 
-						if(this.config.dimmEntries ||  entrie.isSameOrAfter(now, 'day')){   // don't display for dimmed=false
+							let now = moment()
+							let entrie = moment(birthday,this.day_month_mask)
 
-							if(first_time_for_birthday[birthday] == true) {
-								var imageTD = this.createEl('td', null, "TD-IMAGE".concat(entrie.isBefore(now,'day')?"_DIMMED":'') , bodyTR, this.getBD_DAY_from_Date(birthday));
+							let ageInfo=this.config.ageFormat.length? this.config.ageFormat.replace('n',person.age):person.age
+							let bdInfo=this.config.dateFormat.length? ageInfo+' '+person.birthday_moment.format(this.config.dateFormat):ageInfo
+							if(this.config.dimmEntries ||  entrie.isSameOrAfter(now, 'day')){   // don't display for dimmed=false
 
-								var nameTD = this.createEl('td', null, "TD-BODY".concat(entrie.isBefore(now,'day')?"_DIMMED":'') , bodyTR, person.name);
-								// needs class for width
-								this.createEl("span", null, null, nameTD, "");
-								var spanTDo = this.createEl("span", null, "TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":''), nameTD, person.age);
+								if(first_time_for_birthday[birthday] == true) {
+									var imageTD = this.createEl('td', null, "TD-IMAGE".concat(entrie.isBefore(now,'day')?"_DIMMED":'') , bodyTR, /*this.getBD_DAY_from_Date(birthday)*/ this.getBD_DAY_from_Date(birthday));
+
+									var nameTD = this.createEl('td', null, "TD-BODY".concat(entrie.isBefore(now,'day')?"_DIMMED":'') , bodyTR, person.name);
+									// needs class for width
+									this.createEl("span", null, null, nameTD, "");
+
+									var spanTDo = this.createEl("span", null, "TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":''), nameTD, bdInfo );
+								}
+								else {
+									// add a break
+									this.createEl('br', null , null , spanTDo, null);
+									// add a span with name
+
+									var nameTD = this.createEl('span', null, "TD-SAME".concat(entrie.isBefore(now,'day')?"_DIMMED":'') ,spanTDo, person.name);
+									if(this.config.dateFormat){}
+									// add a span with age
+									var spanTD = this.createEl("span", null, "TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":''), spanTDo, bdInfo );
+								}
 							}
-							else {
-								// add a break
-								this.createEl('br', null , null , spanTDo, null);
-								// add a span with name
 
-								var nameTD = this.createEl('span', null, "TD-SAME".concat(entrie.isBefore(now,'day')?"_DIMMED":'') ,spanTDo, person.name);
-
-								// add a span with age
-								var spanTD = this.createEl("span", null, "TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":''), spanTDo, person.age);
-							}
+							first_time_for_birthday[birthday] = false;
 						}
-
-						first_time_for_birthday[birthday] = false;
 					}
 				}
 			}
