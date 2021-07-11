@@ -380,9 +380,9 @@ Module.register("birthdaylist", {
 		var wrapper = this.createEl("div",null,null,null,null);
 		if(this.suspended==false){
 
-			let counter = this.config.maxEntries
-
 			if(Object.keys(this.active_birthdays).length > 0) {
+
+				let counter = 0
 
 				// create your table here
 				var table = this.createEl("table", "birthday-table","TABLE", wrapper, null);
@@ -398,43 +398,52 @@ Module.register("birthdaylist", {
 
 				for(var birthday of Object.keys(this.active_birthdays)) {
 
-					if(this.config.maxEntries===0 || counter-->0){
+					if(this.config.maxEntries===0 || counter<this.config.maxEntries){
 
 						first_time_for_birthday[birthday]=true
 
 						for(var person of this.active_birthdays[birthday]) {
+							if(this.config.maxEntries===0 || counter<this.config.maxEntries){
+								// create looped row section
+								var bodyTR = this.createEl('tr', null, "TR-BODY",tBody, null);
 
-							// create looped row section
-							var bodyTR = this.createEl('tr', null, "TR-BODY",tBody, null);
+								let now = moment()
+								let entrie = moment(birthday,this.day_month_mask)
 
-							let now = moment()
-							let entrie = moment(birthday,this.day_month_mask)
+								let ageInfo=this.config.ageFormat.length? this.config.ageFormat.replace('n',person.age):person.age
+								let bdInfo=this.config.dateFormat.length? person.birthday_moment.format(this.config.dateFormat):ageInfo
 
-							let ageInfo=this.config.ageFormat.length? this.config.ageFormat.replace('n',person.age):person.age
-							let bdInfo=this.config.dateFormat.length? ageInfo+' '+person.birthday_moment.format(this.config.dateFormat):ageInfo
-							if(this.config.dimmEntries ||  entrie.isSameOrAfter(now, 'day')){   // don't display for dimmed=false
+								if(this.config.dimmEntries ||  entrie.isSameOrAfter(now, 'day')){   // don't display for dimmed=false
 
-								if(first_time_for_birthday[birthday] == true) {
-									var imageTD = this.createEl('td', null, "TD-IMAGE".concat(entrie.isBefore(now,'day')?"_DIMMED":'') , bodyTR, /*this.getBD_DAY_from_Date(birthday)*/ this.getBD_DAY_from_Date(birthday));
+									if(first_time_for_birthday[birthday] == true) {
+										var imageTD = this.createEl('td', null, "TD-IMAGE".concat(entrie.isBefore(now,'day')?"_DIMMED":'') , bodyTR, /*this.getBD_DAY_from_Date(birthday)*/ this.getBD_DAY_from_Date(birthday));
 
-									var nameTD = this.createEl('td', null, "TD-BODY".concat(entrie.isBefore(now,'day')?"_DIMMED":'') , bodyTR, person.name);
-									// needs class for width
-									this.createEl("span", null, null, nameTD, "");
+										var nameTD = this.createEl('td', null, "TD-BODY".concat(entrie.isBefore(now,'day')?"_DIMMED":'') , bodyTR, person.name);
+										// needs class for width
+										//this.createEl("span", null, null, nameTD, "");
 
-									var spanTDo = this.createEl("span", null, "TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":''), nameTD, bdInfo );
-								}
-								else {
-									// add a break
-									this.createEl('br', null , null , spanTDo, null);
-									// add a span with name
+										var spanTDo = this.createEl("td", null, "TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":''), bodyTR, ageInfo );
+										if(this.config.dateFormat.length){
+											this.createEl("td", null, "TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":''), bodyTR, bdInfo );
+										}
 
-									var nameTD = this.createEl('span', null, "TD-SAME".concat(entrie.isBefore(now,'day')?"_DIMMED":'') ,spanTDo, person.name);
-									// add a span with age
-									var spanTD = this.createEl("span", null, "TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":''), spanTDo, ageInfo );
+									}
+									else {
+										// add a break
+										this.createEl('br', null , null , nameTD, null);
+										// add a span with name
+										//this.createEl('td', null, null , bodyTR, "");
+										var nameTD1 = this.createEl('span', null, "TD-SAME".concat(entrie.isBefore(now,'day')?"_DIMMED":'') ,nameTD, person.name);
+										this.createEl('br', null , null , spanTDo, null);
+										// add a span with age
+										var spanTD = this.createEl("span", null, null , spanTDo , ageInfo );
+										//"TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":'')
+									}
+									counter++;
 								}
 							}
-
 							first_time_for_birthday[birthday] = false;
+
 						}
 					}
 				}
