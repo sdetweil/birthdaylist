@@ -398,7 +398,7 @@ Module.register("birthdaylist", {
 
 				for(var birthday of Object.keys(this.active_birthdays)) {
 
-					if(this.config.maxEntries===0 || counter-->=0){
+					if(this.config.maxEntries===0 || counter-->0){
 
 						first_time_for_birthday[birthday]=true
 
@@ -429,9 +429,8 @@ Module.register("birthdaylist", {
 									// add a span with name
 
 									var nameTD = this.createEl('span', null, "TD-SAME".concat(entrie.isBefore(now,'day')?"_DIMMED":'') ,spanTDo, person.name);
-									if(this.config.dateFormat){}
 									// add a span with age
-									var spanTD = this.createEl("span", null, "TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":''), spanTDo, bdInfo );
+									var spanTD = this.createEl("span", null, "TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":''), spanTDo, ageInfo );
 								}
 							}
 
