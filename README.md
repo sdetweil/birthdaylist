@@ -22,7 +22,7 @@ u can set colors in CSS. <br>
 sample provided in bdl.css
 
 config  params, and defaults
-
+```
 { 
         module: "birthdaylist",
         position:'top_left',
@@ -45,3 +45,4 @@ config  params, and defaults
 		ageFormat:'',			 // some format string for the persons age, '[ n ]'  n will be replace by age value
 		debug:false
 }
+```
