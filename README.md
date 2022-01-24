@@ -23,6 +23,10 @@ sample provided in bdl.css
 
 config  params, and defaults
 
+{ 
+        module: "birthdaylist",
+        position:'top_left',
+        config: {
 		language: "de",
 		dimmEntries: false,  // true: dims entries and the associated
 				     //       symbol when the date has expired.
@@ -40,3 +44,4 @@ config  params, and defaults
 		dateFormat: '',			 // date format for birthday (default is none), could be 'Do' for 'Sep 12th'
 		ageFormat:'',			 // some format string for the persons age, '[ n ]'  n will be replace by age value
 		debug:false
+}
