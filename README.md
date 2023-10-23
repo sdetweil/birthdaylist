@@ -40,9 +40,9 @@ config  params, and defaults
 				     // This is to prevent collision with other
 				     // modules refreshing at the same time.
 		currentMonthOnly: true,  // will show birthdays for the current month only if true
-		maxEntries: 0,			 // maximum entries to show, default is all
-		dateFormat: '',			 // date format for birthday (default is none), could be 'Do' for 'Sep 12th'
-		ageFormat:'',			 // some format string for the persons age, '[ n ]'  n will be replace by age value
+		maxEntries: 0,	     // maximum entries to show, default is all
+		dateFormat: '',	     // date format for birthday (default is none), could be 'Do' for 'Sep 12th'
+		ageFormat:'',	     // some format string for the persons age, '[ n ]'  n will be replace by age value
 		debug:false
                 }
 }
