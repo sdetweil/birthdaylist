@@ -237,6 +237,7 @@ Module.register("birthdaylist", {
 			Log.log(this.name + " received a socket notification: " + notification + " - Payload: " + payload);
 
 			var now = moment();
+			currentMonth=now.month()
 
 			// clear the list
 			this.active_birthdays = {}
@@ -255,9 +256,10 @@ Module.register("birthdaylist", {
 				var birth_date_moment = moment(birthday.birth,this.date_mask.join(this.separator))
 
 				// if this birthday is for this month
+				birthdayMonth=birth_date_moment.month()
 			  if(
-			  	 (this.config.currentMonthOnly && birth_date_moment.month() == now.month()) ||
-			  	 (!this.config.currentMonthOnly && ((birth_date_moment.month() >= now.month()) || (now.month===11 && birth_date_moment.month()==0)))
+			  	 (this.config.currentMonthOnly && birthdayMonth == currentMonth) ||
+			  	 (!this.config.currentMonthOnly && ((birthdayMonth >= currentMonth) || (currentMonth===11 && birthdayMonth==0)))
 			  	) {
 
 					// birthday is in this month
@@ -290,10 +292,14 @@ Module.register("birthdaylist", {
 					// sort by month/day, as it could be across months
 					let am =  moment(a,this.date_mask.slice(0,2).join(this.separator))
 					let bm =  moment(b,this.date_mask.slice(0,2).join(this.separator))
+					// watch out for year roll over
+					if(am.month()===0)
+						am.add(1,'y')
+					if(bm.month()===0)
+						bm.add(1,'y')
 					return am - bm ;
 				}).forEach(function(key) {
-			console.log("adding entry="+key)
-				ordered[key] = self.active_birthdays[key];
+						ordered[key] = self.active_birthdays[key];
 			});
 
 			// make a copy of the ordered list
@@ -409,22 +415,25 @@ Module.register("birthdaylist", {
 
 								let now = moment()
 								let entrie = moment(birthday,this.day_month_mask)
+								let dim_entry = ( (entrie.month()==now.month() && entrie.date()<=now.date()))
+
+								//console.log("entry is after now="+dim_entry+"="+new Date(entrie)+" eday="+entrie.date()+":nday="+now.date())
 
 								let ageInfo=this.config.ageFormat.length? this.config.ageFormat.replace('n',person.age):person.age
 								let bdInfo=this.config.dateFormat.length? person.birthday_moment.format(this.config.dateFormat):ageInfo
 
-								if(this.config.dimmEntries ||  entrie.isSameOrAfter(now, 'day')){   // don't display for dimmed=false
+								if(this.config.dimmEntries || dim_entry==false){   // don't display for dimmed=false
 
 									if(first_time_for_birthday[birthday] == true) {
-										var imageTD = this.createEl('td', null, "TD-IMAGE".concat(entrie.isBefore(now,'day')?"_DIMMED":'') , bodyTR, /*this.getBD_DAY_from_Date(birthday)*/ this.getBD_DAY_from_Date(birthday));
+										var imageTD = this.createEl('td', null, "TD-IMAGE".concat(dim_entry?"_DIMMED":'') , bodyTR, /*this.getBD_DAY_from_Date(birthday)*/ this.getBD_DAY_from_Date(birthday));
 
-										var nameTD = this.createEl('td', null, "TD-BODY".concat(entrie.isBefore(now,'day')?"_DIMMED":'') , bodyTR, person.name);
+										var nameTD = this.createEl('td', null, "TD-BODY".concat(dim_entry?"_DIMMED":'') , bodyTR, person.name);
 										// needs class for width
 										//this.createEl("span", null, null, nameTD, "");
 
-										var spanTDo = this.createEl("td", null, "TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":''), bodyTR, ageInfo );
+										var spanTDo = this.createEl("td", null, "TD-AGE".concat(dim_entry?"_DIMMED":''), bodyTR, ageInfo );
 										if(this.config.dateFormat.length){
-											this.createEl("td", null, "TD-AGE".concat(entrie.isBefore(now,'day')?"_DIMMED":''), bodyTR, bdInfo );
+											this.createEl("td", null, "TD-AGE".concat(dim_entry?"_DIMMED":''), bodyTR, bdInfo );
 										}
 
 									}
@@ -433,7 +442,7 @@ Module.register("birthdaylist", {
 										this.createEl('br', null , null , nameTD, null);
 										// add a span with name
 										//this.createEl('td', null, null , bodyTR, "");
-										var nameTD1 = this.createEl('span', null, "TD-SAME".concat(entrie.isBefore(now,'day')?"_DIMMED":'') ,nameTD, person.name);
+										var nameTD1 = this.createEl('span', null, "TD-SAME".concat(dim_entry?"_DIMMED":'') ,nameTD, person.name);
 										this.createEl('br', null , null , spanTDo, null);
 										// add a span with age
 										var spanTD = this.createEl("span", null, null , spanTDo , ageInfo );
