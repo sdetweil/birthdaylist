@@ -3,7 +3,7 @@
 /* Magic Mirror
  * Module: birthdaylist
  *
- * Author: perlchamp@gmx.net
+ * Author: perlchamp@gmx.net & sdetweil@gmail.com
  * Lizenz: MIT
  */
 
@@ -75,18 +75,18 @@ Module.register("birthdaylist", {
 		return 	[this.data.path + "/css/bdl.css"];
 	},
 
-/*
+
 	// return list of translation files to use, if any
 	getTranslations: function() {
 		return {
 			// sample of list of files to specify here, if no files, do not use this routine, , or return empty list
-
-			// en: "translations/en.json",  (folders and filenames in your module folder)
-			// de: "translations/de.json"
-			// fr: "translations/fr.json"
+			 en: "translations/en.json",
+			 de: "translations/de.json",
+			 fr: "translations/fr.json",
+			 it: "translations/it.json"
 		}
 	},
-*/
+
 
 	// only called if the module header was configured in module config in config.js
 	getHeader: function() {
@@ -304,6 +304,10 @@ Module.register("birthdaylist", {
 
 			// make a copy of the ordered list
 			this.active_birthdays= ordered;
+			console.log("number of birthdays="+Object.keys(this.active_birthdays).length)
+			if(Object.keys(this.active_birthdays).length===0){
+				this.active_birthdays.push({name:"No birthdays in range", age: 0, birthday_moment:now})
+			}
 
 			// can't copy with moment in the object., it comes out as a string
 		  //this.active_birthdays=JSON.parse(JSON.stringify(ordered))
@@ -456,6 +460,12 @@ Module.register("birthdaylist", {
 						}
 					}
 				}
+				if(counter == 0){
+					var bodyTR = this.createEl('tr', null, "TR-BODY",tBody, null);
+					// add a span with name
+					//this.createEl('td', null, null , bodyTR, "");
+					var nameTD1 = this.createEl('span', null, "TD-SAME",bodyTR, this.translate("NONE"));
+				}
 			}
 		}
 
@@ -472,8 +482,10 @@ Module.register("birthdaylist", {
 			Log.log("Current moment(): " + moment() + " (" + moment().format("hh:mm:ss a") + ")");
 			Log.log("scheduleUpdate() delay set at: " + delay);
 		}
-		if (typeof delay !== "undefined" && delay >= 0) {
-			nextReload = delay;
+		let nextReload = delay
+		let xyz = typeof delay
+		if (typeof delay == "number" && delay >= 0) {
+			nextReload = moment().add(delay,'milliseconds');
 		}
 		if (delay > 0) {
 			// Calculate the time DIFFERENCE to that next reload!
