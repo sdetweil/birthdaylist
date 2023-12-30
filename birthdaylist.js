@@ -83,7 +83,8 @@ Module.register("birthdaylist", {
 			 en: "translations/en.json",
 			 de: "translations/de.json",
 			 fr: "translations/fr.json",
-			 it: "translations/it.json"
+			 it: "translations/it.json",
+			 es: "translations/es.json"
 		}
 	},
 
