@@ -27,7 +27,6 @@ config  params, and defaults
         module: "birthdaylist",
         position:'top_left',
         config: {
-		language: "de",
 		dimmEntries: false,  // true: dims entries and the associated
 				     //       symbol when the date has expired.
 			             // false: dont display entries and the associated
@@ -47,3 +46,7 @@ config  params, and defaults
                 }
 }
 ```
+
+if no birthdays are found to display a message will be shown 
+
+no birthdays in range to display
