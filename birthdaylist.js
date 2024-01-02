@@ -27,6 +27,7 @@ Module.register("birthdaylist", {
 		maxEntries: 0,
 		dateFormat: '',
 		ageFormat:'',
+		withMonth: false,
 	},
 	suspended: false,
 	// place to save birthdays to display
@@ -361,7 +362,7 @@ Module.register("birthdaylist", {
 	},
 
 	// extract the day from the bd, without leading 0
-	getBD_DAY_from_Date: function(birthday){
+	getBD_DAY_from_Date: function(birthday, withmonth){
 		// watch out if year is 1st, day might be last
 		// if last, then we only have two fields (in YYYY/MM/DD), use the second one
 		var day_index = -1;  // make it fail
@@ -378,11 +379,27 @@ Module.register("birthdaylist", {
 				// YYYY/DD/MM
 		else if(this.monthi==2 && this.dayi==1)
 			day_index=0
-
-		bd= birthday.split(this.separator)[day_index]
+		// parse the date into parts
+		let data = birthday.split(this.separator)
+		// get the month
+		let mn = data[this.monthi]
+		if(mn.startsWith('0'))
+			mn=mn.substring(1)
+		// get the day
+		let bd= data[day_index]
+		let bdout=""
 		if(bd.startsWith('0'))
 			bd=bd.substring(1)
-		return bd
+		if(withmonth == false){
+			bdout=bd
+		} else {
+			if(this.monthi>day_index)
+				bdout=bd+this.separator+mn
+			else
+				bdout=mn+this.separator+bd
+		}
+
+		return bdout
 	},
 
     // this is the major worker of the module, it provides the
@@ -430,7 +447,7 @@ Module.register("birthdaylist", {
 								if(this.config.dimmEntries || dim_entry==false){   // don't display for dimmed=false
 
 									if(first_time_for_birthday[birthday] == true) {
-										var imageTD = this.createEl('td', null, "TD-IMAGE".concat(dim_entry?"_DIMMED":'') , bodyTR, /*this.getBD_DAY_from_Date(birthday)*/ this.getBD_DAY_from_Date(birthday));
+										var imageTD = this.createEl('td', null, "TD-IMAGE".concat(dim_entry?"_DIMMED":'').concat(this.config.withMonth?"_withmonth":'') , bodyTR, this.getBD_DAY_from_Date(birthday, this.config.withMonth));
 
 										var nameTD = this.createEl('td', null, "TD-BODY".concat(dim_entry?"_DIMMED":'') , bodyTR, person.name);
 										// needs class for width

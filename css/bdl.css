@@ -78,6 +78,37 @@
   padding: 10px 0px 10px 0px;
 }
 
+
+.birthdaylist .TD-IMAGE_withmonth {
+  width: 27px;
+  font-size: 12px;
+  color: #000000;
+  background-repeat: no-repeat;
+  background-position: top left;
+  background-image: url("/modules/birthdaylist/images/calendar_sheet.png");
+  font-weight: 700;
+  line-height: 26px;
+  vertical-align: top;
+  text-align: center;
+  margin: 0px;
+  padding: 10px 0px 10px 0px;
+}
+
+.birthdaylist .TD-IMAGE_DIMMED_withmonth {
+  width: 27px;
+  font-size: 12px;
+  color: #999999;
+  background-repeat: no-repeat;
+  background-position: top left;
+  background-image: url("/modules/birthdaylist/images/calendar_sheet_dimmed.png");
+  font-weight: 700;
+  line-height: 26px;
+  vertical-align: top;
+  text-align: center;
+  margin: 0px;
+  padding: 10px 0px 10px 0px;
+}
+
 .birthdaylist .TD-BODY {
   font-size: 18px;
   text-transform: uppercase;
