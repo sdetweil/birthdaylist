@@ -295,10 +295,10 @@ Module.register("birthdaylist", {
 					let am =  moment(a,this.date_mask.slice(0,2).join(this.separator))
 					let bm =  moment(b,this.date_mask.slice(0,2).join(this.separator))
 					// watch out for year roll over
-					if(am.month()===0)
-						am.add(1,'y')
-					if(bm.month()===0)
-						bm.add(1,'y')
+				//	if(am.month()===0)
+				//		am.add(1,'y')
+				//	if(bm.month()===0)
+				//		bm.add(1,'y')
 					return am - bm ;
 				}).forEach(function(key) {
 						ordered[key] = self.active_birthdays[key];
