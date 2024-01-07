@@ -103,11 +103,13 @@ Module.register("birthdaylist", {
 			// send our config to our node_helper
 			this.sendSocketNotification("CONFIG",this.config);
 		}
-		if (sender) {
-			Log.log(this.name + " received a module notification: " + notification + " from sender: " + sender.name);
-		}
-		else {
-			Log.log(this.name + " received a system notification: " + notification);
+		if(this.config.debug){
+			if (sender) {
+				Log.log(this.name + " received a module notification: " + notification + " from sender: " + sender.name);
+			}
+			else {
+				Log.log(this.name + " received a system notification: " + notification);
+			}
 		}
 	},
 
@@ -236,7 +238,7 @@ Module.register("birthdaylist", {
 
 			var self = this
 
-			Log.log(this.name + " received a socket notification: " + notification + " - Payload: " + payload);
+			Log.log(this.name + " received a socket notification: " + notification + " - Payload: " + JSON.stringify(payload));
 
 			var now = moment();
 			currentMonth=now.month()
@@ -273,14 +275,20 @@ Module.register("birthdaylist", {
 						//   info) in the hash
 						self.active_birthdays[birth_date] = []
 					}
-
+					// get age in years
 					var person_age = now.diff(birth_date_moment, 'years')
-					if(person_age == 0)
+					// if newborn
+					if(person_age == 0){
 						person_age = ' '
-					else
-					if(birth_date_moment.format('DD') > now.format('DD'))
-						person_age++;
-
+					}
+					else{
+						if(this.config.debug)
+							Log.log("month compare bd month="+ birthdayMonth +" now month="+currentMonth )
+						// if the age will change later this year,
+						if(birthdayMonth > currentMonth)
+							// do the projection
+							person_age++;
+				  }
 					// save the persons name and age on the list
 					// second time around on, we will just append to the end for this date
 					self.active_birthdays[birth_date].push({'name':birthday.name, 'age': person_age, birthday_moment:birth_date_moment})
@@ -306,7 +314,7 @@ Module.register("birthdaylist", {
 
 			// make a copy of the ordered list
 			this.active_birthdays= ordered;
-			console.log("number of birthdays="+Object.keys(this.active_birthdays).length)
+			Log.log("number of birthdays="+Object.keys(this.active_birthdays).length)
 			if(Object.keys(this.active_birthdays).length===0){
 				this.active_birthdays.push({name:"No birthdays in range", age: 0, birthday_moment:now})
 			}
@@ -439,7 +447,7 @@ Module.register("birthdaylist", {
 								let entrie = moment(birthday,this.day_month_mask)
 								let dim_entry = ( (entrie.month()==now.month() && entrie.date()<=now.date()))
 
-								//console.log("entry is after now="+dim_entry+"="+new Date(entrie)+" eday="+entrie.date()+":nday="+now.date())
+								//Log.log("entry is after now="+dim_entry+"="+new Date(entrie)+" eday="+entrie.date()+":nday="+now.date())
 
 								let ageInfo=this.config.ageFormat.length? this.config.ageFormat.replace('n',person.age):person.age
 								let bdInfo=this.config.dateFormat.length? person.birthday_moment.format(this.config.dateFormat):ageInfo
