@@ -285,7 +285,7 @@ Module.register("birthdaylist", {
 						if(this.config.debug)
 							Log.log("month compare bd month="+ birthdayMonth +" now month="+currentMonth )
 						// if the age will change later this year,
-						if(birthdayMonth > currentMonth)
+						if(birthdayMonth > currentMonth || (birthdayMonth === currentMonth && (birth_date_moment.format('DD') > now.format('DD') )))
 							// do the projection
 							person_age++;
 				  }
