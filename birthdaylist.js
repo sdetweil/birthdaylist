@@ -28,11 +28,11 @@ Module.register("birthdaylist", {
 		dateFormat: '',
 		ageFormat:'',
 		withMonth: false,
+              
 	},
 	suspended: false,
 	// place to save birthdays to display
     active_birthdays : { },
-
     timer:null,
 
 	yeari:-1,				 // will be the array position of the year
@@ -333,12 +333,16 @@ Module.register("birthdaylist", {
 	// system notification your module is being hidden
 	// typically you would stop doing UI updates (getDom/updateDom) if the module is hidden
 	suspend: function() {
+                if(this.config.debug)
+                   console.log(this.name +" suspending");
 		this.suspended=true
 	},
 
 	// system notification your module is being unhidden/shown
 	// typically you would resume doing UI updates (getDom/updateDom) if the module is shown
 	resume: function() {
+                if(this.config.debug)
+                   console.log(this.name +" resuming");
 		this.suspended=false
 	},
 
@@ -493,7 +497,10 @@ Module.register("birthdaylist", {
 					var nameTD1 = this.createEl('span', null, "TD-SAME",bodyTR, this.translate("NONE"));
 				}
 			}
-		}
+		} else {
+		   if(this.config.debug)
+                     console.log(this.name +" gegtDom, suspended");
+                }
 
 			// pass the created content back to MM to add to DOM.
 			return wrapper;
