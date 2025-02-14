@@ -56,7 +56,7 @@ Module.register("birthdaylist", {
 
 		// calculate next midnight and add updateDelay
 		var now = moment();
-		this.midnight = moment([now.year(), now.month(), now.date() + 1]).add(this.config.updateDelay, "seconds");
+		this.midnight = now // moment([now.year(), now.month(), now.date() + 1]).add(this.config.updateDelay, "seconds");
 		this.loaded = false;
 		this.scheduleUpdate(this.config.initialLoadDelay * 1000);
 	},
@@ -325,7 +325,7 @@ Module.register("birthdaylist", {
 			// tell MM to call and get our content
 			if(this.config.debug)
 				Log.log(JSON.stringify(this.active_birthdays))
-			self.updateDom();
+			self.reloadDom() //self.updateDom();
 		}
 
 	},
@@ -333,17 +333,23 @@ Module.register("birthdaylist", {
 	// system notification your module is being hidden
 	// typically you would stop doing UI updates (getDom/updateDom) if the module is hidden
 	suspend: function() {
-                if(this.config.debug)
-                   console.log(this.name +" suspending");
-		this.suspended=true
+		if(this.config.debug)
+			console.log(this.name +" suspending");
+		this.suspended = true
+		if (this.timer) {
+			cancelTimeout(this.timer)
+			this.timer = null
+		}
 	},
 
 	// system notification your module is being unhidden/shown
 	// typically you would resume doing UI updates (getDom/updateDom) if the module is shown
 	resume: function() {
-                if(this.config.debug)
-                   console.log(this.name +" resuming");
-		this.suspended=false
+		if(this.config.debug)
+			console.log(this.name +" resuming");
+		this.suspended = false
+		this.midnight = 0  // force redraw and recalc of midnight and next update, don't know how long been suspended
+		this.reloadDom()
 	},
 
 	// create document element worker
@@ -528,13 +534,14 @@ Module.register("birthdaylist", {
 				var  mins = Math.floor(nextReload.asMinutes()) - hours * 60;
 				var  secs = Math.floor(nextReload.asSeconds()) - ((hours * 3600 ) + (mins * 60));
 				Log.log("  nextReload should happen at: " + delay + " (" + moment(delay).format("hh:mm:ss a") + ")");
-				Log.log("                  which is in: " + mins + " minutes and " + secs + " seconds.");
+				//Log.log("                  which is in: " + mins + " minutes and " + secs + " seconds.");
 				Log.log("              midnight set at: " + this.midnight + " (" + moment(this.midnight).format("hh:mm:ss a") + ")");
 				Log.log("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =");
+				Log.log("nextReload ms = "+nextReload)
 			}
 		}
 		var self = this;
-		setTimeout(function() {
+		this.timer=setTimeout(function() {
 			self.reloadDom();
 		}, nextReload);
 	},
@@ -546,9 +553,9 @@ Module.register("birthdaylist", {
 		var now = moment();
 		if (now > this.midnight) {
 			this.updateDom(this.config.fadeSpeed * 1000);
-			this.midnight = moment([now.year(), now.month(), now.date() + 1]).add(this.config.updateDelay, "seconds");
+			this.midnight = moment(now).add(1, 'days').startOf("day");
 		}
-		var nextRefresh = moment([now.year(), now.month(), now.date(), now.hour() + 1]);
+		var nextRefresh = moment(now).add(1, 'days').startOf("day").add(this.config.updateDelay, "seconds");
 		this.scheduleUpdate(nextRefresh);
   }
 
