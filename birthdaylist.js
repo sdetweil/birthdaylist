@@ -15,7 +15,7 @@ Module.register("birthdaylist", {
 							 //       symbol when the date has expired.
 							 // false: delete entries and the associated
 							 //        symbol when the date has expired.
-	  debug:false,
+	  	debug:false,
 		initialLoadDelay: 0, // How many seconds to wait on a fresh start up.
 							 // This is to prevent collision with all other modules also
 							 // loading all at the same time. This only happens once,
@@ -282,8 +282,9 @@ Module.register("birthdaylist", {
 						person_age = ' '
 					}
 					else{
-						if(this.config.debug)
-							Log.log("month compare bd month="+ birthdayMonth +" now month="+currentMonth )
+						if (this.config.debug) {
+							Log.log("month compare bd month=" + birthdayMonth + " now month=" + currentMonth)
+						}
 						// if the age will change later this year,
 						if(birthdayMonth > currentMonth || (birthdayMonth === currentMonth && (birth_date_moment.format('DD') > now.format('DD') )))
 							// do the projection
@@ -323,8 +324,9 @@ Module.register("birthdaylist", {
 		  //this.active_birthdays=JSON.parse(JSON.stringify(ordered))
 
 			// tell MM to call and get our content
-			if(this.config.debug)
+			if (this.config.debug) {
 				Log.log(JSON.stringify(this.active_birthdays))
+			}
 			self.reloadDom() //self.updateDom();
 		}
 
@@ -333,8 +335,9 @@ Module.register("birthdaylist", {
 	// system notification your module is being hidden
 	// typically you would stop doing UI updates (getDom/updateDom) if the module is hidden
 	suspend: function() {
-		if(this.config.debug)
-			console.log(this.name +" suspending");
+		if (this.config.debug) {
+			console.log(this.name + " suspending");
+		}
 		this.suspended = true
 		if (this.timer) {
 			cancelTimeout(this.timer)
@@ -345,8 +348,9 @@ Module.register("birthdaylist", {
 	// system notification your module is being unhidden/shown
 	// typically you would resume doing UI updates (getDom/updateDom) if the module is shown
 	resume: function() {
-		if(this.config.debug)
-			console.log(this.name +" resuming");
+		if (this.config.debug) {
+			console.log(this.name + " resuming");
+		}
 		this.suspended = false
 		this.midnight = 0  // force redraw and recalc of midnight and next update, don't know how long been suspended
 		this.reloadDom()
@@ -504,9 +508,10 @@ Module.register("birthdaylist", {
 				}
 			}
 		} else {
-		   if(this.config.debug)
-                     console.log(this.name +" gegtDom, suspended");
-                }
+			if (this.config.debug) {
+				console.log(this.name + " gegtDom, suspended");
+			}
+        }
 
 			// pass the created content back to MM to add to DOM.
 			return wrapper;
