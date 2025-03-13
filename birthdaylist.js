@@ -556,8 +556,8 @@ Module.register("birthdaylist", {
 			Log.log("          Calling reloadDom()!");
 		}
 		var now = moment();
-		if (now > this.midnight) {
-			this.updateDom(this.config.fadeSpeed * 1000);
+		this.updateDom(this.config.fadeSpeed * 1000);
+		if (now > this.midnight) {		
 			this.midnight = moment(now).add(1, 'days').startOf("day");
 		}
 		var nextRefresh = moment(now).add(1, 'days').startOf("day").add(this.config.updateDelay, "seconds");
