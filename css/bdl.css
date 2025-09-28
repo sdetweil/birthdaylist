@@ -203,3 +203,20 @@
   border: 1px solid green;
 */
 }
+
+
+/*
+  usage for showing TODAY entries in a different color than the rest
+
+  this makes them all the same color, but you can style each part separately
+
+  .birthdaylist .TD-IMAGE_TODAY, .TD-BODY_TODAY, .TD-AGE_TODAY {
+        color: yellow;
+  }
+
+  here color the name part red, if used with the above, it will override the yellow
+  as its AFTER the setting yellow in the custom.css
+  .birthdaylist  .TD-BODY_TODAY {
+       color: red;
+  }
+*/

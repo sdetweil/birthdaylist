@@ -24,12 +24,15 @@ Module.register("birthdaylist", {
 						     // This is to prevent collision with other
 							 // modules refreshing at the same time.
 		currentMonthOnly: true,
+		showToday:false,		// whether a bd with TODAY should be shown as active, vs already passed (and dimmed)
+
 		maxEntries: 0,
 		dateFormat: '',
 		ageFormat:'',
 		withMonth: false,
               
 	},
+	showTodayClass:"_TODAY",
 	suspended: false,
 	// place to save birthdays to display
     active_birthdays : { },
@@ -340,7 +343,7 @@ Module.register("birthdaylist", {
 		}
 		this.suspended = true
 		if (this.timer) {
-			cancelTimeout(this.timer)
+			clearTimeout(this.timer)
 			this.timer = null
 		}
 	},
@@ -459,25 +462,39 @@ Module.register("birthdaylist", {
 
 								let now = moment()
 								let entrie = moment(birthday,this.day_month_mask)
-								let dim_entry = ( (entrie.month()==now.month() && entrie.date()<=now.date()))
+								let dim_entry = (entrie.month()==now.month() && entrie.date()<=now.date())
+								let showEntryToday = (this.config.showToday && entrie.date()==now.date())
 
 								//Log.log("entry is after now="+dim_entry+"="+new Date(entrie)+" eday="+entrie.date()+":nday="+now.date())
 
 								let ageInfo=this.config.ageFormat.length? this.config.ageFormat.replace('n',person.age):person.age
 								let bdInfo=this.config.dateFormat.length? person.birthday_moment.format(this.config.dateFormat):ageInfo
 
-								if(this.config.dimmEntries || dim_entry==false){   // don't display for dimmed=false
+								if(this.config.dimmEntries || dim_entry==false || showEntryToday) {   // don't display for dimmed=false
 
 									if(first_time_for_birthday[birthday] == true) {
-										var imageTD = this.createEl('td', null, "TD-IMAGE".concat(dim_entry?"_DIMMED":'').concat(this.config.withMonth?"_withmonth":'') , bodyTR, this.getBD_DAY_from_Date(birthday, this.config.withMonth));
+										if(this.config.showToday && showEntryToday){
+											var imageTD = this.createEl('td', null, "TD-IMAGE".concat(this.showTodayClass.concat(this.config.withMonth?"_withmonth":'')) , bodyTR, this.getBD_DAY_from_Date(birthday, this.config.withMonth));
 
-										var nameTD = this.createEl('td', null, "TD-BODY".concat(dim_entry?"_DIMMED":'') , bodyTR, person.name);
-										// needs class for width
-										//this.createEl("span", null, null, nameTD, "");
+											var nameTD = this.createEl('td', null, "TD-BODY".concat(this.showTodayClass) , bodyTR, person.name);
+											// needs class for width
+											//this.createEl("span", null, null, nameTD, "");
 
-										var spanTDo = this.createEl("td", null, "TD-AGE".concat(dim_entry?"_DIMMED":''), bodyTR, ageInfo );
-										if(this.config.dateFormat.length){
-											this.createEl("td", null, "TD-AGE".concat(dim_entry?"_DIMMED":''), bodyTR, bdInfo );
+											var spanTDo = this.createEl("td", null, "TD-AGE".concat(this.showTodayClass), bodyTR, ageInfo );
+											if(this.config.dateFormat.length){
+												this.createEl("td", null, "TD-AGE".concat(this.showTodayClass), bodyTR, bdInfo );
+											}
+										} else {
+											var imageTD = this.createEl('td', null, "TD-IMAGE".concat(dim_entry?"_DIMMED":('').concat(this.config.withMonth?"_withmonth":'')) , bodyTR, this.getBD_DAY_from_Date(birthday, this.config.withMonth));
+
+											var nameTD = this.createEl('td', null, "TD-BODY".concat(dim_entry?"_DIMMED":(this.config.showEntryToday?this.config.showTodayClass:'')) , bodyTR, person.name);
+											// needs class for width
+											//this.createEl("span", null, null, nameTD, "");
+
+											var spanTDo = this.createEl("td", null, "TD-AGE".concat(dim_entry?"_DIMMED":(this.config.showEntryToday?this.config.showTodayClass:'')), bodyTR, ageInfo );
+											if(this.config.dateFormat.length){
+												this.createEl("td", null, "TD-AGE".concat(dim_entry?"_DIMMED":(this.config.showEntryToday?this.config.showTodayClass:'')), bodyTR, bdInfo );
+											}
 										}
 
 									}

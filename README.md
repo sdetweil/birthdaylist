@@ -42,8 +42,9 @@ config  params, and defaults
 		maxEntries: 0,	     // maximum entries to show, default is all
 		dateFormat: '',	     // date format for birthday (default is none), could be 'Do' for 'Sep 12th'
 		ageFormat:'',	     // some format string for the persons age, '[ n ]'  n will be replace by age value
-		withMonth: false     // then true, add the month display as part of the date field, 
+		withMonth: false,     // then true, add the month display as part of the date field,
 				     // using the same orientation and separator as the input csv data
+                showToday: false,    // show birthdays happening TODAY, default false. see bdl.css for usage in custom.css
 		debug:false
                 }
 }
