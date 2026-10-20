@@ -15,7 +15,8 @@ Module.register("birthdaylist", {
 							 //       symbol when the date has expired.
 							 // false: delete entries and the associated
 							 //        symbol when the date has expired.
-	  	debug:false,
+		showBirthdaysToday:false,  // show birthdays today if true
+	  debug:false,
 		initialLoadDelay: 0, // How many seconds to wait on a fresh start up.
 							 // This is to prevent collision with all other modules also
 							 // loading all at the same time. This only happens once,
@@ -24,18 +25,15 @@ Module.register("birthdaylist", {
 						     // This is to prevent collision with other
 							 // modules refreshing at the same time.
 		currentMonthOnly: true,
-		showToday:false,		// whether a bd with TODAY should be shown as active, vs already passed (and dimmed)
-
 		maxEntries: 0,
 		dateFormat: '',
 		ageFormat:'',
 		withMonth: false,
-              
 	},
-	showTodayClass:"_TODAY",
 	suspended: false,
 	// place to save birthdays to display
     active_birthdays : { },
+
     timer:null,
 
 	yeari:-1,				 // will be the array position of the year
@@ -59,7 +57,7 @@ Module.register("birthdaylist", {
 
 		// calculate next midnight and add updateDelay
 		var now = moment();
-		this.midnight = now // moment([now.year(), now.month(), now.date() + 1]).add(this.config.updateDelay, "seconds");
+		this.midnight = moment([now.year(), now.month(), now.date() + 1]).add(this.config.updateDelay, "seconds");
 		this.loaded = false;
 		this.scheduleUpdate(this.config.initialLoadDelay * 1000);
 	},
@@ -285,9 +283,8 @@ Module.register("birthdaylist", {
 						person_age = ' '
 					}
 					else{
-						if (this.config.debug) {
-							Log.log("month compare bd month=" + birthdayMonth + " now month=" + currentMonth)
-						}
+						if(this.config.debug)
+							Log.log("month compare bd month="+ birthdayMonth +" now month="+currentMonth )
 						// if the age will change later this year,
 						if(birthdayMonth > currentMonth || (birthdayMonth === currentMonth && (birth_date_moment.format('DD') > now.format('DD') )))
 							// do the projection
@@ -295,7 +292,7 @@ Module.register("birthdaylist", {
 				  }
 					// save the persons name and age on the list
 					// second time around on, we will just append to the end for this date
-					self.active_birthdays[birth_date].push({'name':birthday.name, 'age': person_age, birthday_moment:birth_date_moment})
+					self.active_birthdays[birth_date].push({'name':birthday.name, 'age': person_age, 'birthday_moment':birth_date_moment})
 				}
 			}
 
@@ -320,17 +317,17 @@ Module.register("birthdaylist", {
 			this.active_birthdays= ordered;
 			Log.log("number of birthdays="+Object.keys(this.active_birthdays).length)
 			if(Object.keys(this.active_birthdays).length===0){
-				this.active_birthdays.push({name:"No birthdays in range", age: 0, birthday_moment:now})
+				this.active_birthdays["none"]=[]
+				this.active_birthdays["none"].push({name:"No birthdays in range", age: 0, birthday_moment:now})
 			}
 
 			// can't copy with moment in the object., it comes out as a string
 		  //this.active_birthdays=JSON.parse(JSON.stringify(ordered))
 
 			// tell MM to call and get our content
-			if (this.config.debug) {
+			if(this.config.debug)
 				Log.log(JSON.stringify(this.active_birthdays))
-			}
-			self.reloadDom() //self.updateDom();
+			self.updateDom();
 		}
 
 	},
@@ -338,25 +335,13 @@ Module.register("birthdaylist", {
 	// system notification your module is being hidden
 	// typically you would stop doing UI updates (getDom/updateDom) if the module is hidden
 	suspend: function() {
-		if (this.config.debug) {
-			console.log(this.name + " suspending");
-		}
-		this.suspended = true
-		if (this.timer) {
-			clearTimeout(this.timer)
-			this.timer = null
-		}
+		this.suspended=true
 	},
 
 	// system notification your module is being unhidden/shown
 	// typically you would resume doing UI updates (getDom/updateDom) if the module is shown
 	resume: function() {
-		if (this.config.debug) {
-			console.log(this.name + " resuming");
-		}
-		this.suspended = false
-		this.midnight = 0  // force redraw and recalc of midnight and next update, don't know how long been suspended
-		this.reloadDom()
+		this.suspended=false
 	},
 
 	// create document element worker
@@ -462,39 +447,27 @@ Module.register("birthdaylist", {
 
 								let now = moment()
 								let entrie = moment(birthday,this.day_month_mask)
-								let dim_entry = (entrie.month()==now.month() && entrie.date()<=now.date())
-								let showEntryToday = (this.config.showToday && entrie.date()==now.date())
+								let dim_entry = ( (entrie.month()==now.month() && entrie.date()<=now.date()))
+								if(dim_entry && this.config.showBirthdaysToday && ( (entrie.month()==now.month() && entrie.date()==now.date())))
+									dim_entry = false
 
 								//Log.log("entry is after now="+dim_entry+"="+new Date(entrie)+" eday="+entrie.date()+":nday="+now.date())
 
 								let ageInfo=this.config.ageFormat.length? this.config.ageFormat.replace('n',person.age):person.age
 								let bdInfo=this.config.dateFormat.length? person.birthday_moment.format(this.config.dateFormat):ageInfo
 
-								if(this.config.dimmEntries || dim_entry==false || showEntryToday) {   // don't display for dimmed=false
+								if(this.config.dimmEntries || dim_entry==false){   // don't display for dimmed=false
 
 									if(first_time_for_birthday[birthday] == true) {
-										if(this.config.showToday && showEntryToday){
-											var imageTD = this.createEl('td', null, "TD-IMAGE".concat(this.showTodayClass.concat(this.config.withMonth?"_withmonth":'')) , bodyTR, this.getBD_DAY_from_Date(birthday, this.config.withMonth));
+										var imageTD = this.createEl('td', null, "TD-IMAGE".concat(dim_entry?"_DIMMED":'').concat(this.config.withMonth?"_withmonth":'') , bodyTR, this.getBD_DAY_from_Date(birthday, this.config.withMonth));
 
-											var nameTD = this.createEl('td', null, "TD-BODY".concat(this.showTodayClass) , bodyTR, person.name);
-											// needs class for width
-											//this.createEl("span", null, null, nameTD, "");
+										var nameTD = this.createEl('td', null, "TD-BODY".concat(dim_entry?"_DIMMED":'') , bodyTR, person.name);
+										// needs class for width
+										//this.createEl("span", null, null, nameTD, "");
 
-											var spanTDo = this.createEl("td", null, "TD-AGE".concat(this.showTodayClass), bodyTR, ageInfo );
-											if(this.config.dateFormat.length){
-												this.createEl("td", null, "TD-AGE".concat(this.showTodayClass), bodyTR, bdInfo );
-											}
-										} else {
-											var imageTD = this.createEl('td', null, "TD-IMAGE".concat(dim_entry?"_DIMMED":('').concat(this.config.withMonth?"_withmonth":'')) , bodyTR, this.getBD_DAY_from_Date(birthday, this.config.withMonth));
-
-											var nameTD = this.createEl('td', null, "TD-BODY".concat(dim_entry?"_DIMMED":(this.config.showEntryToday?this.config.showTodayClass:'')) , bodyTR, person.name);
-											// needs class for width
-											//this.createEl("span", null, null, nameTD, "");
-
-											var spanTDo = this.createEl("td", null, "TD-AGE".concat(dim_entry?"_DIMMED":(this.config.showEntryToday?this.config.showTodayClass:'')), bodyTR, ageInfo );
-											if(this.config.dateFormat.length){
-												this.createEl("td", null, "TD-AGE".concat(dim_entry?"_DIMMED":(this.config.showEntryToday?this.config.showTodayClass:'')), bodyTR, bdInfo );
-											}
+										var spanTDo = this.createEl("td", null, "TD-AGE".concat(dim_entry?"_DIMMED":''), bodyTR, ageInfo );
+										if(this.config.dateFormat.length){
+											this.createEl("td", null, "TD-AGE".concat(dim_entry?"_DIMMED":''), bodyTR, bdInfo );
 										}
 
 									}
@@ -524,11 +497,7 @@ Module.register("birthdaylist", {
 					var nameTD1 = this.createEl('span', null, "TD-SAME",bodyTR, this.translate("NONE"));
 				}
 			}
-		} else {
-			if (this.config.debug) {
-				console.log(this.name + " gegtDom, suspended");
-			}
-        }
+		}
 
 			// pass the created content back to MM to add to DOM.
 			return wrapper;
@@ -556,14 +525,13 @@ Module.register("birthdaylist", {
 				var  mins = Math.floor(nextReload.asMinutes()) - hours * 60;
 				var  secs = Math.floor(nextReload.asSeconds()) - ((hours * 3600 ) + (mins * 60));
 				Log.log("  nextReload should happen at: " + delay + " (" + moment(delay).format("hh:mm:ss a") + ")");
-				//Log.log("                  which is in: " + mins + " minutes and " + secs + " seconds.");
+				Log.log("                  which is in: " + mins + " minutes and " + secs + " seconds.");
 				Log.log("              midnight set at: " + this.midnight + " (" + moment(this.midnight).format("hh:mm:ss a") + ")");
 				Log.log("= = = = = = = = = = = = = = = = = = = = = = = = = = = = = =");
-				Log.log("nextReload ms = "+nextReload)
 			}
 		}
 		var self = this;
-		this.timer=setTimeout(function() {
+		setTimeout(function() {
 			self.reloadDom();
 		}, nextReload);
 	},
@@ -573,11 +541,11 @@ Module.register("birthdaylist", {
 			Log.log("          Calling reloadDom()!");
 		}
 		var now = moment();
-		this.updateDom(this.config.fadeSpeed * 1000);
-		if (now > this.midnight) {		
-			this.midnight = moment(now).add(1, 'days').startOf("day");
+		if (now > this.midnight) {
+			this.updateDom(this.config.fadeSpeed * 1000);
+			this.midnight = moment([now.year(), now.month(), now.date() + 1]).add(this.config.updateDelay, "seconds");
 		}
-		var nextRefresh = moment(now).add(1, 'days').startOf("day").add(this.config.updateDelay, "seconds");
+		var nextRefresh = moment([now.year(), now.month(), now.date(), now.hour() + 1]);
 		this.scheduleUpdate(nextRefresh);
   }
 

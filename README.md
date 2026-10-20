@@ -7,6 +7,7 @@ npm install<br>
 
 
 reads from bdl.csv in the module data folder, sample provided
+shows UPCOMING birthdays.. by default does NOT show birthday for TODAY
 
 2 columns
 
@@ -31,6 +32,7 @@ config  params, and defaults
 				     //       symbol when the date has expired.
 			             // false: dont display entries and the associated
 				     //        symbol when the date has expired.
+		showBirthdaysToday: false,  // show birthdays TODAY if true
 		initialLoadDelay: 0, // How many seconds to wait on a fresh start up.
 				     // This is to prevent collision with all other modules also
 				     // loading all at the same time. This only happens once,
